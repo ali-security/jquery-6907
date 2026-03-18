@@ -71,6 +71,54 @@ QUnit.module( "ajax", {
 		};
 	} );
 
+	ajaxTest( "jQuery.ajax() - do not execute js (crossOrigin)", 2, function( assert ) {
+		return {
+			create: function( options ) {
+				options.crossDomain = true;
+				return jQuery.ajax( url( "data/script.php?header=ecma" ), options );
+			},
+			success: function() {
+				assert.ok( true, "success" );
+			},
+			complete: function() {
+				assert.ok( true, "complete" );
+			}
+		};
+	} );
+
+	ajaxTest( "jQuery.ajax() - execute js for crossOrigin when dataType option is provided", 3,
+		function( assert ) {
+			return {
+				create: function( options ) {
+					options.crossDomain = true;
+					options.dataType = "script";
+					return jQuery.ajax( url( "data/script.php?header=ecma" ), options );
+				},
+				success: function() {
+					assert.ok( true, "success" );
+				},
+				complete: function() {
+					assert.ok( true, "complete" );
+				}
+			};
+		}
+	);
+
+	ajaxTest( "jQuery.ajax() - do not execute js (crossOrigin)", 2, function( assert ) {
+		return {
+			create: function( options ) {
+				options.crossDomain = true;
+				return jQuery.ajax( url( "data/script.php" ), options );
+			},
+			success: function() {
+				assert.ok( true, "success" );
+			},
+			complete: function() {
+				assert.ok( true, "complete" );
+			}
+		};
+	} );
+
 	ajaxTest( "jQuery.ajax() - success callbacks (late binding)", 8, function( assert ) {
 		return {
 			setup: addGlobalEvents( "ajaxStart ajaxStop ajaxSend ajaxComplete ajaxSuccess", assert ),
@@ -2151,7 +2199,7 @@ if ( typeof window.ArrayBuffer === "undefined" || typeof new XMLHttpRequest().re
 
 		addGlobalEvents( "ajaxStart ajaxStop ajaxSend ajaxComplete ajaxError", assert )();
 		jQuery( document ).ajaxStop( done );
-		jQuery( "<div/>" ).load( "data/404.html", function() {
+		jQuery( "<div></div>" ).load( "data/404.html", function() {
 			assert.ok( true, "complete" );
 		} );
 	} );
@@ -2233,7 +2281,7 @@ if ( typeof window.ArrayBuffer === "undefined" || typeof new XMLHttpRequest().re
 				return "Hello World";
 			}
 		} );
-		jQuery( "<div/>" ).load( url( "data/name.html" ), function( responseText ) {
+		jQuery( "<div></div>" ).load( url( "data/name.html" ), function( responseText ) {
 			assert.strictEqual( jQuery( this ).html(), "Hello World", "Test div was filled with filtered data" );
 			assert.strictEqual( responseText, "Hello World", "Test callback receives filtered data" );
 			QUnit.start();
@@ -2241,7 +2289,7 @@ if ( typeof window.ArrayBuffer === "undefined" || typeof new XMLHttpRequest().re
 	} );
 
 	QUnit.asyncTest( "jQuery.fn.load( String, Object, Function )", 2, function( assert ) {
-		jQuery( "<div />" ).load( url( "data/params_html.php" ), {
+		jQuery( "<div></div>" ).load( url( "data/params_html.php" ), {
 			"foo": 3,
 			"bar": "ok"
 		}, function() {
@@ -2255,7 +2303,7 @@ if ( typeof window.ArrayBuffer === "undefined" || typeof new XMLHttpRequest().re
 	QUnit.test( "jQuery.fn.load( String, String, Function )", 2, function( assert ) {
 		var done = assert.async();
 
-		jQuery( "<div />" ).load( url( "data/params_html.php" ), "foo=3&bar=ok", function() {
+		jQuery( "<div></div>" ).load( url( "data/params_html.php" ), "foo=3&bar=ok", function() {
 			var $get = jQuery( this ).find( "#get" );
 			assert.strictEqual( $get.find( "#foo" ).text(), "3", "Check if a string of data is passed correctly" );
 			assert.strictEqual( $get.find( "#bar" ).text(), "ok", "Check if a   of data is passed correctly" );
